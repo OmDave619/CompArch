@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>sol.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #2115d0;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #2107b9; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+
+<!-- MathJax for LaTeX rendering -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      packages: {'[+]': ['ams','textmacros','noerrors','noundefined']}
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code']
+    }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js">
+</script>
+
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="cs2323-hw3">CS2323 HW3</h1>
+<p><strong>Roll: CO22BTECH11006</strong> </br>
+<strong>Name: Om Dave</strong> </br></p>
+<h2 id="q1-decimal-to-floating-point-representation">Q1 (Decimal to floating point representation)</h2>
+<h3 id="a--1325-single-precision">(a) -13.25 (Single Precision)</h3>
+<p><strong>Sign Bit:</strong> 1</p>
+<p><strong>Binary Conversion:</strong></p>
+<ul>
+<li>Integer (13): <code>1101</code></li>
+<li>Fraction (0.25): <code>.01</code></li>
+<li>Combined: <code>1101.01</code></li>
+</ul>
+<p><strong>Normalization:</strong> <code>1.10101 * 2^3</code></p>
+<p><strong>Exponent Calculation:</strong></p>
+<ul>
+<li>Actual Exponent: 3</li>
+<li>Bias (Single): 127</li>
+<li>Biased Exponent: 3 + 127 = 130</li>
+<li>Binary (8-bit): <code>10000010</code></li>
+</ul>
+<p><strong>Mantissa Calculation:</strong></p>
+<ul>
+<li>From Normalization: <code>10101</code></li>
+<li>Padded (23-bit): <code>10101000000000000000000</code></li>
+</ul>
+<p><strong>Final Binary Representation:</strong></p>
+<ul>
+<li><code>1 10000010 10101000000000000000000</code></li>
+</ul>
+<p><strong>Hexadecimal Conversion:</strong></p>
+<ul>
+<li>Grouped: <code>1100 0001 0101 0100 0000 0000 0000 0000</code></li>
+<li>Final Hex: <code>0xC1540000</code></li>
+</ul>
+<h3 id="b-01-single-precision">(b) 0.1 (Single Precision)</h3>
+<p><strong>Sign Bit:</strong> 0</p>
+<p><strong>Binary Conversion:</strong></p>
+<ul>
+<li><code>0.0001100110011...</code> (repeating <code>0011</code>)</li>
+</ul>
+<p><strong>Normalization:</strong> <code>1.100110011.* 2^-4</code></p>
+<p><strong>Exponent Calculation:</strong></p>
+<ul>
+<li>Actual Exponent: -4</li>
+<li>Bias (Single): 127</li>
+<li>Biased Exponent: -4 + 127 = 123</li>
+<li>Binary (8-bit): <code>01111011</code></li>
+</ul>
+<p><strong>Mantissa Calculation:</strong></p>
+<ul>
+<li>Repeating Pattern: <code>100110011...</code></li>
+<li>Truncated/Rounded (23-bit): <code>10011001100110011001101</code></li>
+</ul>
+<p><strong>Final Binary Representation:</strong></p>
+<ul>
+<li><code>0 01111011 10011001100110011001101</code></li>
+</ul>
+<p><strong>Hexadecimal Conversion:</strong></p>
+<ul>
+<li>Grouped: <code>0011 1101 1100 1100 1100 1100 1100 1101</code></li>
+<li>Final Hex: <code>0x3DCCCCCD</code></li>
+</ul>
+<h3 id="c-15675-double-precision">(c) 156.75 (Double Precision)</h3>
+<p><strong>Sign Bit:</strong> 0</p>
+<p><strong>Binary Conversion:</strong></p>
+<ul>
+<li>Integer (156): <code>10011100</code></li>
+<li>Fraction (0.75): <code>.11</code></li>
+<li>Combined: <code>10011100.11</code></li>
+</ul>
+<p><strong>Normalization:</strong> <code>1.001110011 * 2^7</code></p>
+<p><strong>Exponent Calculation:</strong></p>
+<ul>
+<li>Actual Exponent: 7</li>
+<li>Bias (Double): 1023</li>
+<li>Biased Exponent: 7 + 1023 = 1030</li>
+<li>Binary (11-bit): <code>10000000110</code></li>
+</ul>
+<p><strong>Mantissa Calculation:</strong></p>
+<ul>
+<li>From Normalization: <code>001110011</code></li>
+<li>Padded (52-bit): <code>001110011000...000</code></li>
+</ul>
+<p><strong>Final Binary Representation:</strong></p>
+<ul>
+<li><code>0 10000000110 0011100110000000000000000000000000000000000000000000</code></li>
+</ul>
+<p><strong>Hexadecimal Conversion:</strong></p>
+<ul>
+<li>Grouped: <code>0100 0000 0110 0011 1001 1000 0000 .0000</code></li>
+<li>Final Hex: <code>0x4063980000000000</code></li>
+</ul>
+<h3 id="d--00078125-double-precision">(d) -0.0078125 (Double Precision)</h3>
+<p><strong>Sign Bit:</strong> 1</p>
+<p><strong>Binary Conversion:</strong></p>
+<ul>
+<li><code>0.0000001</code></li>
+</ul>
+<p><strong>Normalization:</strong> <code>1.0 * 2^-7</code></p>
+<p><strong>Exponent Calculation:</strong></p>
+<ul>
+<li>Actual Exponent: -7</li>
+<li>Bias (Double): 1023</li>
+<li>Biased Exponent: -7 + 1023 = 1016</li>
+<li>Binary (11-bit): <code>01111111000</code></li>
+</ul>
+<p><strong>Mantissa Calculation:</strong></p>
+<ul>
+<li>From Normalization: <code>0</code></li>
+<li>Padded (52-bit): All zeros</li>
+</ul>
+<p><strong>Final Binary Representation:</strong></p>
+<ul>
+<li><code>1 01111111000 0000000000000000000000000000000000000000000000000000</code></li>
+</ul>
+<p><strong>Hexadecimal Conversion:</strong></p>
+<ul>
+<li>Grouped: <code>1011 1111 1000 0000 0000 .0000</code></li>
+<li>Final Hex: <code>0xBF8000000000000</code></li>
+</ul>
+<h2 id="q2-floating-point-to-decimal-representation">Q2 (Floating point to Decimal representation)</h2>
+<h3 id="a-0xc1200000-single-precision">(a) 0xC1200000 (Single Precision)</h3>
+<p><strong>Hex to Binary:</strong></p>
+<ul>
+<li><code>1100 0001 0010 0000 0000 0000 0000 0000</code></li>
+</ul>
+<p><strong>Deconstruct Bits (1-8-23):</strong></p>
+<ul>
+<li><strong>Sign:</strong> <code>1</code> (Negative)</li>
+<li><strong>Exponent:</strong> <code>10000010</code> (Decimal: 130) -&gt; Actual Exponent: 130 - 127 = 3</li>
+<li><strong>Mantissa:</strong> <code>01000000000000000000000</code></li>
+</ul>
+<p><strong>Decimal Conversion:</strong></p>
+<ul>
+<li><strong>Normalized Binary (1.Mantissa):</strong> <code>1.01</code></li>
+<li><strong>Non-normalized Binary (Shift by Exponent 3):</strong> <code>1.01 * 2^3</code> = <code>1010.0</code></li>
+<li><strong>Binary to Decimal:</strong>  <code>8 + 0 + 2 + 0</code> = <code>10.0</code></li>
+<li><strong>Final Value (With Sign):</strong> <strong>-10.0</strong></li>
+</ul>
+<h3 id="b-0x3f800000-single-precision">(b) 0x3F800000 (Single Precision)</h3>
+<p><strong>Hex to Binary:</strong></p>
+<ul>
+<li><code>0011 1111 1000 0000 0000 0000 0000 0000</code></li>
+</ul>
+<p><strong>Deconstruct Bits (1-8-23):</strong></p>
+<ul>
+<li><strong>Sign:</strong> <code>0</code> (Positive)</li>
+<li><strong>Exponent:</strong> <code>01111111</code> (Decimal: 127) -&gt; Actual Exponent: 127 - 127 = 0</li>
+<li><strong>Mantissa:</strong> <code>00000000000000000000000</code></li>
+</ul>
+<p><strong>Decimal Conversion:</strong></p>
+<ul>
+<li><strong>Normalized Binary (1.Mantissa):</strong> <code>1.0</code></li>
+<li><strong>Non-normalized Binary (Shift by Exponent 0):</strong> <code>1.0 * 2^0</code> = <code>1.0</code></li>
+<li><strong>Binary to Decimal:</strong> <code>1.0</code></li>
+<li><strong>Final Value (With Sign):</strong> <strong>1.0</strong></li>
+</ul>
+<h3 id="c-0xbff0000000000000-double-precision">(c) 0xBFF0000000000000 (Double Precision)</h3>
+<p><strong>Hex to Binary:</strong></p>
+<ul>
+<li><code>1011 1111 1111 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000</code></li>
+</ul>
+<p><strong>Deconstruct Bits (1-11-52):</strong></p>
+<ul>
+<li><strong>Sign:</strong> <code>1</code> (Negative)</li>
+<li><strong>Exponent:</strong> <code>01111111111</code> (Decimal: 1023) -&gt; Actual Exponent: 1023 - 1023 = 0</li>
+<li><strong>Mantissa:</strong> <code>000...</code> (All zeros)</li>
+</ul>
+<p><strong>Decimal Conversion:</strong></p>
+<ul>
+<li><strong>Normalized Binary (1.Mantissa):</strong> <code>1.0</code></li>
+<li><strong>Non-normalized Binary (Shift by Exponent 0):</strong> <code>1.0 * 2^0</code> = <code>1.0</code></li>
+<li><strong>Binary to Decimal:</strong> <code>1.0</code></li>
+<li><strong>Final Value (With Sign):</strong> <strong>-1.0</strong></li>
+</ul>
+<h3 id="d-0x4024000000000000-double-precision">(d) 0x4024000000000000 (Double Precision)</h3>
+<p><strong>Hex to Binary:</strong></p>
+<ul>
+<li><code>0100 0000 0010 0100 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000</code></li>
+</ul>
+<p><strong>Deconstruct Bits (1-11-52):</strong></p>
+<ul>
+<li><strong>Sign:</strong> <code>0</code> (Positive)</li>
+<li><strong>Exponent:</strong> <code>10000000010</code> (Decimal: 1026) -&gt; Actual Exponent: 1026 - 1023 = 3</li>
+<li><strong>Mantissa:</strong> <code>010000...</code></li>
+</ul>
+<p><strong>Decimal Conversion:</strong></p>
+<ul>
+<li><strong>Normalized Binary (1.Mantissa):</strong> <code>1.01</code></li>
+<li><strong>Non-normalized Binary (Shift by Exponent 3):</strong> <code>1.01 * 2^3</code> = <code>1010.0</code></li>
+<li><strong>Binary to Decimal:</strong> <code>10.0</code></li>
+<li><strong>Final Value (With Sign):</strong> <strong>10.0</strong></li>
+</ul>
+<h2 id="q3">Q3</h2>
+<p><strong>Given (hex):</strong>
+A = <code>0x41480000</code> (single) B = <code>0xC0700000</code> (single)</p>
+<h3 id="decode-a-single-precision">Decode A (Single Precision)</h3>
+<ul>
+<li><strong>Hex → Binary (32):</strong> <code>0100 0001 0100 1000 0000 0000 0000 0000</code></li>
+<li><strong>Deconstruct (1–8–23):</strong> <code>0 | 10000010 | 10010000000000000000000</code></li>
+<li><strong>Sign Bit:</strong> <code>0</code></li>
+<li><strong>Exponent:</strong> <code>10000010₂ = 130</code> ⇒ Actual <code>e = 130 − 127 = 3</code></li>
+<li><strong>Mantissa (with hidden 1):</strong> <code>1.1001</code></li>
+<li><strong>Value:</strong> <code>1.1001₂ × 2^3 = 12.5</code></li>
+</ul>
+<h3 id="decode-b-single-precision">Decode B (Single Precision)</h3>
+<ul>
+<li><strong>Hex → Binary (32):</strong> <code>1100 0000 0111 0000 0000 0000 0000 0000</code></li>
+<li><strong>Deconstruct (1–8–23):</strong> <code>1 | 10000000 | 11100000000000000000000</code></li>
+<li><strong>Sign Bit:</strong> <code>1</code></li>
+<li><strong>Exponent:</strong> <code>10000000₂ = 128</code> ⇒ Actual <code>e = 1</code></li>
+<li><strong>Mantissa (with hidden 1):</strong> <code>1.111</code></li>
+<li><strong>Value:</strong> <code>−(1.111₂ × 2^1) = −3.75</code></li>
+</ul>
+<h3 id="result-normalized">Result (Normalized)</h3>
+<p><strong>Value:</strong> <code>12.5 + (-3.75) = 8.75 = 1.00011₂ × 2^3</code></p>
+<h3 id="encode-result-as-double-precision">Encode Result as <strong>Double Precision</strong></h3>
+<ul>
+<li>
+<p><strong>Sign Bit:</strong> <code>0</code></p>
+</li>
+<li>
+<p><strong>Exponent Calculation:</strong> Actual <code>e = 3</code>, Bias (double) <code>1023</code> ⇒ <code>E = 1026</code> ⇒ <code>10000000010</code></p>
+</li>
+<li>
+<p><strong>Mantissa (52-bit):</strong> from <code>1.00011</code> ⇒ fraction <code>00011</code> + pad to 52
+<code>000110..</code></p>
+</li>
+<li>
+<p><strong>Final Binary Representation (1–11–52):</strong>
+<code>0 10000000010 0001100..</code></p>
+</li>
+<li>
+<p><strong>Hexadecimal Conversion (64, grouped):</strong>
+<code>0100 0000 0010 0001 1000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000</code></p>
+</li>
+<li>
+<p><strong>Final Hex:</strong> <strong>0x4021800000000000</strong></p>
+</li>
+</ul>
+<hr>
+<h2 id="q4">Q4</h2>
+<h3 id="decode-a-double-precision">Decode A (Double Precision)</h3>
+<ul>
+<li><strong>Hex → Binary (64):</strong> <code>0100 0000 0011 1001 0000 .0000</code></li>
+<li><strong>Deconstruct (1–11–52):</strong> <code>0 | 10000000011 | 1001000…(zeros)…</code></li>
+<li><strong>Sign Bit:</strong> <code>0</code></li>
+<li><strong>Exponent:</strong> <code>10000000011₂ = 1027</code> ⇒ Actual <code>e = 1027 - 1023 = 4</code></li>
+<li><strong>Mantissa (with hidden 1):</strong> <code>1.1001</code></li>
+<li><strong>Value:</strong> <code>1.1001₂ × 2^4 = 25.0</code></li>
+</ul>
+<h3 id="decode-b-double-precision">Decode B (Double Precision)</h3>
+<ul>
+<li><strong>Hex → Binary (64):</strong> <code>1100 0000 0000 1000 0000 .0000</code></li>
+<li><strong>Deconstruct (1–11–52):</strong> <code>1 | 10000000000 | 1000000…(zeros)…</code></li>
+<li><strong>Sign Bit:</strong> <code>1</code></li>
+<li><strong>Exponent:</strong> <code>10000000000₂ = 1024</code> ⇒ Actual <code>e = 1024 - 1023 = 1</code></li>
+<li><strong>Mantissa (with hidden 1):</strong> <code>1.1</code></li>
+<li><strong>Value:</strong> <code>−(1.1₂ × 2^1) = −3.0</code></li>
+</ul>
+<h3 id="multiply-real">Multiply (Real)</h3>
+<ul>
+<li><strong>Value:</strong> <code>25.0 * -3 = −75.0</code></li>
+</ul>
+<h3 id="normalize-product">Normalize Product</h3>
+<ul>
+<li><strong>Value:</strong> <code>−75.0 = = -(1001011₂) = −(1.001011₂ × 2^6)</code></li>
+</ul>
+<h3 id="encode-result-as-single-precision">Encode Result as <strong>Single Precision</strong></h3>
+<ul>
+<li><strong>Sign Bit:</strong> <code>1</code></li>
+<li><strong>Exponent Calculation:</strong> Actual <code>e = 6</code>, Biased exponent (single) ⇒ <code>E = 127 + 6 = 133</code> ⇒ <code>10000101</code></li>
+<li><strong>Mantissa (23-bit):</strong> from <code>1.001011</code> ⇒ fraction <code>001011</code> + pad to 23</li>
+</ul>
+<p><strong>Final Binary Representation (1–8–23):</strong>
+<code>1 10000101 00101100000000000000000</code></p>
+<p><strong>Hexadecimal Conversion (32, grouped):</strong>
+<code>1100 0010 1001 0110 0000 0000 0000 0000</code></p>
+<ul>
+<li><strong>Final Hex:</strong> <strong>0xC2960000</strong></li>
+</ul>
+<h2 id="q5">Q5</h2>
+<p>Take the integer:</p>
+<p>$$
+N = 2^{24} + 1 = 16{,}777{,}217
+$$</p>
+<ul>
+<li>
+<p>A 32-bit signed integer can represent all values from $-2^{31}$ to $2^{31}-1$.
+So $16{,}777{,}217$ can be represented.</p>
+</li>
+<li>
+<p>A 32-bit float (IEEE 754 single precision) has:</p>
+<ul>
+<li>23 fraction bits + 1 hidden bit = 24 bits of precision.</li>
+<li>This means every integer up to $2^{24}$ can be exactly represented.</li>
+<li>Once an integer requires more than 24 bits to write in binary, precision is lost.</li>
+</ul>
+</li>
+</ul>
+<h4 id="floating-point-representation-of-2241">Floating-point representation of $2^{24}+1$</h4>
+<ul>
+<li>
+<p>Binary form:</p>
+<p>$$
+2^{24}+1 = 1.0000\ldots000001 \times 2^{24}
+$$</p>
+<p>(23 zeros then a trailing <code>1</code>).</p>
+</li>
+<li>
+<p>Mantissa: only 23 fraction bits are stored. The trailing <code>1</code> at the 24th place does not fit.</p>
+</li>
+</ul>
+<p>Thus the stored value becomes:</p>
+<p>$$
+1.0000\ldots0000 \times 2^{24} = 2^{24} = 16{,}777{,}216
+$$</p>
+<p>$16{,}777{,}217$ exists in 32-bit signed int but not in float. In float it is rounded off to $16{,}777{,}216$, losing the $+1$.</p>
+<h2 id="q6">Q6</h2>
+<p>Let float32 numbers:</p>
+<p>$$
+a=-2^{24},\quad b=2^{24},\quad c=1.
+$$</p>
+<ul>
+<li>
+<p><strong>Left-associate</strong> $(a+b)+c$:</p>
+<p>$$
+((-2^{24})+2^{24})+1 = 0+1 = 1\quad(\text{exact}).
+$$</p>
+</li>
+<li>
+<p><strong>Right-associate</strong> $a+(b+c)$:</p>
+<p>$$
+b+c = 2^{24}+1 ;\xrightarrow{\text{round}}; 2^{24}\quad(\text{As seen previously}),
+$$</p>
+<p>so</p>
+<p>$$
+a+(b+c)=(-2^{24})+2^{24}=0.
+$$</p>
+</li>
+</ul>
+<p>Hence,</p>
+<p>$$
+(a+b)+c = 1 ;\neq; a+(b+c) = 0.
+$$</p>
+<p>Hence, addition in floating point numbers is not always associative.</p>
+
+</body>
+</html>

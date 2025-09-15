@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+spawn ../vm-ubuntu-22.04 --start-vm
+expect "VM_STARTED"
+send "load /home/omdave/riscv-simul/Lab2/CO22BTECH11006.s\r"
+expect "VM_PROGRAM_LOADED"
+send "run\r"
+expect "VM_PROGRAM_END"
+send "dump_mem 0x10000200 8\r"
+expect "VM_MEMORY_DUMPED"
+send "print_mem 0x10000200 8\r"
+interact
