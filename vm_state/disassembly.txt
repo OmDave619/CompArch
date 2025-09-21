@@ -1,210 +1,289 @@
-0000000000000000 <start>:
+0000000000000000 <main>:
     0: 100002b7             lui x5, 65536
-    4: 0002a507             flw f10, x5, 0
-    8: 0042a503             lw x10, x5, 4
-    c: 218000ef             jal x1, 536 <one_by_x>
-   10: 100002b7             lui x5, 65536
-   14: 20028313             addi x6, x5, 512
-   18: 00a32027             fsw x6, f10, 0
-   1c: 26000463             beq x0, x0, 616 <Exit>
+    4: 20028313             addi x6, x5, 512
+    8: 0002a383             lw x7, x5, 0
+    c: 00428e13             addi x28, x5, 4
 
-0000000000000020 <fact>:
-   20: 00100293             addi x5, x0, 1
-   24: 00050863             beq x10, x0, 16 <factExit>
+0000000000000010 <loopStart>:
+   10: 36038863             beq x7, x0, 880 <Exit>
+   14: 000e2583             lw x11, x28, 0
+   18: 004e2507             flw f10, x28, 4
+   1c: 008e2503             lw x10, x28, 8
+   20: fe010113             addi x2, x2, -32
+   24: 00112023             sw x2, x1, 0
+   28: 00512223             sw x2, x5, 4
+   2c: 00612423             sw x2, x6, 8
+   30: 00712623             sw x2, x7, 12
+   34: 01c12823             sw x2, x28, 16
+   38: 0a05c663             blt x11, x0, 172 <handleNAN>
+   3c: 00400e93             addi x29, x0, 4
+   40: 0abec263             blt x29, x11, 164 <handleNAN>
+   44: 0aa05063             bge x0, x10, 160 <handleNAN>
+   48: 00000e93             addi x29, x0, 0
+   4c: 03d58063             beq x11, x29, 32 <call_exp>
+   50: 00100e93             addi x29, x0, 1
+   54: 03d58063             beq x11, x29, 32 <call_sin>
+   58: 00200e93             addi x29, x0, 2
+   5c: 03d58063             beq x11, x29, 32 <call_cos>
+   60: 00300e93             addi x29, x0, 3
+   64: 03d58063             beq x11, x29, 32 <call_lnx>
+   68: 04000663             beq x0, x0, 76 <call_one_by_x>
 
-0000000000000028 <factLoop>:
-   28: 02a282b3             mul x5, x5, x10
-   2c: fff50513             addi x10, x10, -1
-   30: fe051ce3             bne x10, x0, -8 <factLoop>
+000000000000006c <call_exp>:
+   6c: 0ec000ef             jal x1, 236 <exp>
+   70: 08000063             beq x0, x0, 128 <storeResult>
 
-0000000000000034 <factExit>:
-   34: 00028533             add x10, x5, x0
-   38: 00008067             jalr x0, x1, 0
+0000000000000074 <call_sin>:
+   74: 144000ef             jal x1, 324 <sin>
+   78: 06000c63             beq x0, x0, 120 <storeResult>
 
-000000000000003c <pow>:
-   3c: 00100293             addi x5, x0, 1
-   40: d002f053             fcvt.s.w f0, x5 rm=7
+000000000000007c <call_cos>:
+   7c: 1b8000ef             jal x1, 440 <cos>
+   80: 06000863             beq x0, x0, 112 <storeResult>
 
-0000000000000044 <powLoop>:
-   44: 00050863             beq x10, x0, 16 <powExit>
-   48: 10a07053             fmul.s f0, f0, f10 rm=7
-   4c: fff50513             addi x10, x10, -1
-   50: fe000ae3             beq x0, x0, -12 <powLoop>
+0000000000000084 <call_lnx>:
+   84: 10000f17             auipc x30, 65536
+   88: fc0f0f13             addi x30, x30, -64
+   8c: 000f2287             flw f5, x30, 0
+   90: a0a29fd3             flt.s x31, f5, f10
+   94: 040f9863             bne x31, x0, 80 <handleNAN>
+   98: 10000f17             auipc x30, 65536
+   9c: fa8f0f13             addi x30, x30, -88
+   a0: 000f2287             flw f5, x30, 0
+   a4: a0550fd3             fle.s x31, f10, f5
+   a8: 020f9e63             bne x31, x0, 60 <handleNAN>
+   ac: 200000ef             jal x1, 512 <lnx>
+   b0: 04000063             beq x0, x0, 64 <storeResult>
 
-0000000000000054 <powExit>:
-   54: 20000553             fsgnj.s f10, f0, f0 rm=7
-   58: 00008067             jalr x0, x1, 0
+00000000000000b4 <call_one_by_x>:
+   b4: 10000f17             auipc x30, 65536
+   b8: f90f0f13             addi x30, x30, -112
+   bc: 000f2287             flw f5, x30, 0
+   c0: a0a28fd3             fle.s x31, f5, f10
+   c4: 020f9063             bne x31, x0, 32 <handleNAN>
+   c8: 10000f17             auipc x30, 65536
+   cc: f78f0f13             addi x30, x30, -136
+   d0: 000f2287             flw f5, x30, 0
+   d4: a0550fd3             fle.s x31, f10, f5
+   d8: 000f9663             bne x31, x0, 12 <handleNAN>
+   dc: 244000ef             jal x1, 580 <one_by_x>
+   e0: 00000863             beq x0, x0, 16 <storeResult>
 
-000000000000005c <exp>:
-   5c: 00000293             addi x5, x0, 0
-   60: d002f453             fcvt.s.w f8, x5 rm=7
-   64: ff010113             addi x2, x2, -16
-   68: 00112023             sw x2, x1, 0
-   6c: 00a12227             fsw x2, f10, 4
-   70: 00a12423             sw x2, x10, 8
+00000000000000e4 <handleNAN>:
+   e4: 7fc00f37             lui x30, 523264
+   e8: f00f0553             fmv.w.x f10, x30 rm=7
+   ec: 00000263             beq x0, x0, 4 <storeResult>
 
-0000000000000074 <expLoop>:
-   74: 02050c63             beq x10, x0, 56 <expExit>
-   78: fff50513             addi x10, x10, -1
-   7c: 00a12423             sw x2, x10, 8
-   80: fa1ff0ef             jal x1, -96 <fact>
-   84: d00570d3             fcvt.s.w f1, x10 rm=7
-   88: 00812503             lw x10, x2, 8
-   8c: 00a12227             fsw x2, f10, 4
-   90: fadff0ef             jal x1, -84 <pow>
-   94: 20a50153             fsgnj.s f2, f10, f10 rm=7
-   98: 00412507             flw f10, x2, 4
-   9c: 00812503             lw x10, x2, 8
-   a0: 181171d3             fdiv.s f3, f2, f1 rm=7
-   a4: 00347453             fadd.s f8, f8, f3 rm=7
-   a8: fc0006e3             beq x0, x0, -52 <expLoop>
+00000000000000f0 <storeResult>:
+   f0: 00012083             lw x1, x2, 0
+   f4: 00412283             lw x5, x2, 4
+   f8: 00812303             lw x6, x2, 8
+   fc: 00c12383             lw x7, x2, 12
+  100: 01012e03             lw x28, x2, 16
+  104: 02010113             addi x2, x2, 32
+  108: 00a32027             fsw x6, f10, 0
+  10c: 00430313             addi x6, x6, 4
+  110: 00ce0e13             addi x28, x28, 12
+  114: fff38393             addi x7, x7, -1
+  118: ee000ce3             beq x0, x0, -264 <loopStart>
 
-00000000000000ac <expExit>:
-   ac: 00012083             lw x1, x2, 0
-   b0: 01010113             addi x2, x2, 16
-   b4: 20840553             fsgnj.s f10, f8, f8 rm=7
-   b8: 00008067             jalr x0, x1, 0
+000000000000011c <fact>:
+  11c: 00100293             addi x5, x0, 1
+  120: 00050863             beq x10, x0, 16 <factExit>
 
-00000000000000bc <sin>:
-   bc: 00000293             addi x5, x0, 0
-   c0: d002f453             fcvt.s.w f8, x5 rm=7
-   c4: ff010113             addi x2, x2, -16
-   c8: 00112023             sw x2, x1, 0
-   cc: 00a12227             fsw x2, f10, 4
-   d0: 00a12423             sw x2, x10, 8
+0000000000000124 <factLoop>:
+  124: 02a282b3             mul x5, x5, x10
+  128: fff50513             addi x10, x10, -1
+  12c: fe051ce3             bne x10, x0, -8 <factLoop>
 
-00000000000000d4 <sinLoop>:
-   d4: 04050a63             beq x10, x0, 84 <sinExit>
-   d8: fff50513             addi x10, x10, -1
-   dc: 00a12423             sw x2, x10, 8
-   e0: 000503b3             add x7, x10, x0
-   e4: 00139e13             slli x28, x7, 1
-   e8: 001e0e13             addi x28, x28, 1
-   ec: 000e0533             add x10, x28, x0
-   f0: f31ff0ef             jal x1, -208 <fact>
-   f4: d00570d3             fcvt.s.w f1, x10 rm=7
-   f8: 00a12227             fsw x2, f10, 4
-   fc: 000e0533             add x10, x28, x0
-  100: f3dff0ef             jal x1, -196 <pow>
-  104: 20a50153             fsgnj.s f2, f10, f10 rm=7
-  108: 00412507             flw f10, x2, 4
-  10c: 00812503             lw x10, x2, 8
-  110: 181171d3             fdiv.s f3, f2, f1 rm=7
-  114: 00157e93             andi x29, x10, 1
-  118: 000e8463             beq x29, x0, 8 <sinEven>
-  11c: 203191d3             fsgnjn.s f3, f3, f3 rm=7
-
-0000000000000120 <sinEven>:
-  120: 00347453             fadd.s f8, f8, f3 rm=7
-  124: fa0008e3             beq x0, x0, -80 <sinLoop>
-
-0000000000000128 <sinExit>:
-  128: 00012083             lw x1, x2, 0
-  12c: 01010113             addi x2, x2, 16
-  130: 20840553             fsgnj.s f10, f8, f8 rm=7
+0000000000000130 <factExit>:
+  130: 00028533             add x10, x5, x0
   134: 00008067             jalr x0, x1, 0
 
-0000000000000138 <cos>:
-  138: 00000293             addi x5, x0, 0
-  13c: d002f453             fcvt.s.w f8, x5 rm=7
-  140: ff010113             addi x2, x2, -16
-  144: 00112023             sw x2, x1, 0
-  148: 00a12227             fsw x2, f10, 4
-  14c: 00a12423             sw x2, x10, 8
+0000000000000138 <pow>:
+  138: 00100293             addi x5, x0, 1
+  13c: d002f053             fcvt.s.w f0, x5 rm=7
 
-0000000000000150 <cosLoop>:
-  150: 04050863             beq x10, x0, 80 <cosExit>
-  154: fff50513             addi x10, x10, -1
-  158: 00a12423             sw x2, x10, 8
-  15c: 000503b3             add x7, x10, x0
-  160: 00139e13             slli x28, x7, 1
-  164: 000e0533             add x10, x28, x0
-  168: eb9ff0ef             jal x1, -328 <fact>
-  16c: d00570d3             fcvt.s.w f1, x10 rm=7
-  170: 00a12227             fsw x2, f10, 4
-  174: 000e0533             add x10, x28, x0
-  178: ec5ff0ef             jal x1, -316 <pow>
-  17c: 20a50153             fsgnj.s f2, f10, f10 rm=7
-  180: 00412507             flw f10, x2, 4
+0000000000000140 <powLoop>:
+  140: 00050863             beq x10, x0, 16 <powExit>
+  144: 10a07053             fmul.s f0, f0, f10 rm=7
+  148: fff50513             addi x10, x10, -1
+  14c: fe000ae3             beq x0, x0, -12 <powLoop>
+
+0000000000000150 <powExit>:
+  150: 20000553             fsgnj.s f10, f0, f0 rm=7
+  154: 00008067             jalr x0, x1, 0
+
+0000000000000158 <exp>:
+  158: 00000293             addi x5, x0, 0
+  15c: d002f453             fcvt.s.w f8, x5 rm=7
+  160: ff010113             addi x2, x2, -16
+  164: 00112023             sw x2, x1, 0
+  168: 00a12227             fsw x2, f10, 4
+  16c: 00a12423             sw x2, x10, 8
+
+0000000000000170 <expLoop>:
+  170: 02050c63             beq x10, x0, 56 <expExit>
+  174: fff50513             addi x10, x10, -1
+  178: 00a12423             sw x2, x10, 8
+  17c: fa1ff0ef             jal x1, -96 <fact>
+  180: d00570d3             fcvt.s.w f1, x10 rm=7
   184: 00812503             lw x10, x2, 8
-  188: 181171d3             fdiv.s f3, f2, f1 rm=7
-  18c: 00157e93             andi x29, x10, 1
-  190: 000e8463             beq x29, x0, 8 <cosEven>
-  194: 203191d3             fsgnjn.s f3, f3, f3 rm=7
+  188: 00a12227             fsw x2, f10, 4
+  18c: fadff0ef             jal x1, -84 <pow>
+  190: 20a50153             fsgnj.s f2, f10, f10 rm=7
+  194: 00412507             flw f10, x2, 4
+  198: 00812503             lw x10, x2, 8
+  19c: 181171d3             fdiv.s f3, f2, f1 rm=7
+  1a0: 00347453             fadd.s f8, f8, f3 rm=7
+  1a4: fc0006e3             beq x0, x0, -52 <expLoop>
 
-0000000000000198 <cosEven>:
-  198: 00347453             fadd.s f8, f8, f3 rm=7
-  19c: fa000ae3             beq x0, x0, -76 <cosLoop>
+00000000000001a8 <expExit>:
+  1a8: 00012083             lw x1, x2, 0
+  1ac: 01010113             addi x2, x2, 16
+  1b0: 20840553             fsgnj.s f10, f8, f8 rm=7
+  1b4: 00008067             jalr x0, x1, 0
 
-00000000000001a0 <cosExit>:
-  1a0: 00012083             lw x1, x2, 0
-  1a4: 01010113             addi x2, x2, 16
-  1a8: 20840553             fsgnj.s f10, f8, f8 rm=7
-  1ac: 00008067             jalr x0, x1, 0
+00000000000001b8 <sin>:
+  1b8: 00000293             addi x5, x0, 0
+  1bc: d002f453             fcvt.s.w f8, x5 rm=7
+  1c0: ff010113             addi x2, x2, -16
+  1c4: 00112023             sw x2, x1, 0
+  1c8: 00a12227             fsw x2, f10, 4
+  1cc: 00a12423             sw x2, x10, 8
 
-00000000000001b0 <lnx>:
-  1b0: 00000293             addi x5, x0, 0
-  1b4: d002f453             fcvt.s.w f8, x5 rm=7
-  1b8: 00100313             addi x6, x0, 1
-  1bc: d0037253             fcvt.s.w f4, x6 rm=7
-  1c0: 08457253             fsub.s f4, f10, f4 rm=7
-  1c4: ff010113             addi x2, x2, -16
-  1c8: 00112023             sw x2, x1, 0
-  1cc: 00412227             fsw x2, f4, 4
-  1d0: 00a12423             sw x2, x10, 8
-
-00000000000001d4 <lnLoop>:
-  1d4: 04050063             beq x10, x0, 64 <lnExit>
+00000000000001d0 <sinLoop>:
+  1d0: 04050a63             beq x10, x0, 84 <sinExit>
+  1d4: fff50513             addi x10, x10, -1
   1d8: 00a12423             sw x2, x10, 8
   1dc: 000503b3             add x7, x10, x0
-  1e0: d003f0d3             fcvt.s.w f1, x7 rm=7
-  1e4: 00412507             flw f10, x2, 4
-  1e8: 00038533             add x10, x7, x0
-  1ec: e51ff0ef             jal x1, -432 <pow>
-  1f0: 20a50153             fsgnj.s f2, f10, f10 rm=7
-  1f4: 181171d3             fdiv.s f3, f2, f1 rm=7
-  1f8: 0013fe93             andi x29, x7, 1
-  1fc: 000e9463             bne x29, x0, 8 <lnOdd>
-  200: 203191d3             fsgnjn.s f3, f3, f3 rm=7
+  1e0: 00139e13             slli x28, x7, 1
+  1e4: 001e0e13             addi x28, x28, 1
+  1e8: 000e0533             add x10, x28, x0
+  1ec: f31ff0ef             jal x1, -208 <fact>
+  1f0: d00570d3             fcvt.s.w f1, x10 rm=7
+  1f4: 00a12227             fsw x2, f10, 4
+  1f8: 000e0533             add x10, x28, x0
+  1fc: f3dff0ef             jal x1, -196 <pow>
+  200: 20a50153             fsgnj.s f2, f10, f10 rm=7
+  204: 00412507             flw f10, x2, 4
+  208: 00812503             lw x10, x2, 8
+  20c: 181171d3             fdiv.s f3, f2, f1 rm=7
+  210: 00157e93             andi x29, x10, 1
+  214: 000e8463             beq x29, x0, 8 <sinEven>
+  218: 203191d3             fsgnjn.s f3, f3, f3 rm=7
 
-0000000000000204 <lnOdd>:
-  204: 00347453             fadd.s f8, f8, f3 rm=7
-  208: 00038533             add x10, x7, x0
-  20c: fff50513             addi x10, x10, -1
-  210: fc0002e3             beq x0, x0, -60 <lnLoop>
+000000000000021c <sinEven>:
+  21c: 00347453             fadd.s f8, f8, f3 rm=7
+  220: fa0008e3             beq x0, x0, -80 <sinLoop>
 
-0000000000000214 <lnExit>:
-  214: 00012083             lw x1, x2, 0
-  218: 01010113             addi x2, x2, 16
-  21c: 20840553             fsgnj.s f10, f8, f8 rm=7
-  220: 00008067             jalr x0, x1, 0
+0000000000000224 <sinExit>:
+  224: 00012083             lw x1, x2, 0
+  228: 01010113             addi x2, x2, 16
+  22c: 20840553             fsgnj.s f10, f8, f8 rm=7
+  230: 00008067             jalr x0, x1, 0
 
-0000000000000224 <one_by_x>:
-  224: 00000293             addi x5, x0, 0
-  228: d002f453             fcvt.s.w f8, x5 rm=7
-  22c: 00100313             addi x6, x0, 1
-  230: d0037253             fcvt.s.w f4, x6 rm=7
-  234: 08a27253             fsub.s f4, f4, f10 rm=7
-  238: ff010113             addi x2, x2, -16
-  23c: 00112023             sw x2, x1, 0
-  240: 00412227             fsw x2, f4, 4
-  244: 00a12423             sw x2, x10, 8
+0000000000000234 <cos>:
+  234: 00000293             addi x5, x0, 0
+  238: d002f453             fcvt.s.w f8, x5 rm=7
+  23c: ff010113             addi x2, x2, -16
+  240: 00112023             sw x2, x1, 0
+  244: 00a12227             fsw x2, f10, 4
+  248: 00a12423             sw x2, x10, 8
 
-0000000000000248 <one_by_x_Loop>:
-  248: 02050663             beq x10, x0, 44 <one_by_x_Exit>
-  24c: fff50513             addi x10, x10, -1
-  250: 00a12423             sw x2, x10, 8
-  254: 000503b3             add x7, x10, x0
-  258: 00412507             flw f10, x2, 4
-  25c: 00038533             add x10, x7, x0
-  260: dddff0ef             jal x1, -548 <pow>
-  264: 20a50153             fsgnj.s f2, f10, f10 rm=7
-  268: 00247453             fadd.s f8, f8, f2 rm=7
-  26c: 00038533             add x10, x7, x0
-  270: fc000ce3             beq x0, x0, -40 <one_by_x_Loop>
+000000000000024c <cosLoop>:
+  24c: 04050863             beq x10, x0, 80 <cosExit>
+  250: fff50513             addi x10, x10, -1
+  254: 00a12423             sw x2, x10, 8
+  258: 000503b3             add x7, x10, x0
+  25c: 00139e13             slli x28, x7, 1
+  260: 000e0533             add x10, x28, x0
+  264: eb9ff0ef             jal x1, -328 <fact>
+  268: d00570d3             fcvt.s.w f1, x10 rm=7
+  26c: 00a12227             fsw x2, f10, 4
+  270: 000e0533             add x10, x28, x0
+  274: ec5ff0ef             jal x1, -316 <pow>
+  278: 20a50153             fsgnj.s f2, f10, f10 rm=7
+  27c: 00412507             flw f10, x2, 4
+  280: 00812503             lw x10, x2, 8
+  284: 181171d3             fdiv.s f3, f2, f1 rm=7
+  288: 00157e93             andi x29, x10, 1
+  28c: 000e8463             beq x29, x0, 8 <cosEven>
+  290: 203191d3             fsgnjn.s f3, f3, f3 rm=7
 
-0000000000000274 <one_by_x_Exit>:
-  274: 00012083             lw x1, x2, 0
-  278: 01010113             addi x2, x2, 16
-  27c: 20840553             fsgnj.s f10, f8, f8 rm=7
-  280: 00008067             jalr x0, x1, 0
+0000000000000294 <cosEven>:
+  294: 00347453             fadd.s f8, f8, f3 rm=7
+  298: fa000ae3             beq x0, x0, -76 <cosLoop>
+
+000000000000029c <cosExit>:
+  29c: 00012083             lw x1, x2, 0
+  2a0: 01010113             addi x2, x2, 16
+  2a4: 20840553             fsgnj.s f10, f8, f8 rm=7
+  2a8: 00008067             jalr x0, x1, 0
+
+00000000000002ac <lnx>:
+  2ac: 00000293             addi x5, x0, 0
+  2b0: d002f453             fcvt.s.w f8, x5 rm=7
+  2b4: 00100313             addi x6, x0, 1
+  2b8: d0037253             fcvt.s.w f4, x6 rm=7
+  2bc: 08457253             fsub.s f4, f10, f4 rm=7
+  2c0: ff010113             addi x2, x2, -16
+  2c4: 00112023             sw x2, x1, 0
+  2c8: 00412227             fsw x2, f4, 4
+  2cc: 00a12423             sw x2, x10, 8
+
+00000000000002d0 <lnLoop>:
+  2d0: 04050063             beq x10, x0, 64 <lnExit>
+  2d4: 00a12423             sw x2, x10, 8
+  2d8: 000503b3             add x7, x10, x0
+  2dc: d003f0d3             fcvt.s.w f1, x7 rm=7
+  2e0: 00412507             flw f10, x2, 4
+  2e4: 00038533             add x10, x7, x0
+  2e8: e51ff0ef             jal x1, -432 <pow>
+  2ec: 20a50153             fsgnj.s f2, f10, f10 rm=7
+  2f0: 181171d3             fdiv.s f3, f2, f1 rm=7
+  2f4: 0013fe93             andi x29, x7, 1
+  2f8: 000e9463             bne x29, x0, 8 <lnOdd>
+  2fc: 203191d3             fsgnjn.s f3, f3, f3 rm=7
+
+0000000000000300 <lnOdd>:
+  300: 00347453             fadd.s f8, f8, f3 rm=7
+  304: 00038533             add x10, x7, x0
+  308: fff50513             addi x10, x10, -1
+  30c: fc0002e3             beq x0, x0, -60 <lnLoop>
+
+0000000000000310 <lnExit>:
+  310: 00012083             lw x1, x2, 0
+  314: 01010113             addi x2, x2, 16
+  318: 20840553             fsgnj.s f10, f8, f8 rm=7
+  31c: 00008067             jalr x0, x1, 0
+
+0000000000000320 <one_by_x>:
+  320: 00000293             addi x5, x0, 0
+  324: d002f453             fcvt.s.w f8, x5 rm=7
+  328: 00100313             addi x6, x0, 1
+  32c: d0037253             fcvt.s.w f4, x6 rm=7
+  330: 08a27253             fsub.s f4, f4, f10 rm=7
+  334: ff010113             addi x2, x2, -16
+  338: 00112023             sw x2, x1, 0
+  33c: 00412227             fsw x2, f4, 4
+  340: 00a12423             sw x2, x10, 8
+
+0000000000000344 <one_by_x_Loop>:
+  344: 02050663             beq x10, x0, 44 <one_by_x_Exit>
+  348: fff50513             addi x10, x10, -1
+  34c: 00a12423             sw x2, x10, 8
+  350: 000503b3             add x7, x10, x0
+  354: 00412507             flw f10, x2, 4
+  358: 00038533             add x10, x7, x0
+  35c: dddff0ef             jal x1, -548 <pow>
+  360: 20a50153             fsgnj.s f2, f10, f10 rm=7
+  364: 00247453             fadd.s f8, f8, f2 rm=7
+  368: 00038533             add x10, x7, x0
+  36c: fc000ce3             beq x0, x0, -40 <one_by_x_Loop>
+
+0000000000000370 <one_by_x_Exit>:
+  370: 00012083             lw x1, x2, 0
+  374: 01010113             addi x2, x2, 16
+  378: 20840553             fsgnj.s f10, f8, f8 rm=7
+  37c: 00008067             jalr x0, x1, 0
