@@ -1,0 +1,57 @@
+#!/usr/bin/expect -f
+# usage: ./run_vm_multi.expect <asm_path> <dump_addr_hex> <num_qwords>
+# e.g.:  ./run_vm_multi.expect /home/omdave/CompArch/Lab3/helpers/pow_multi_tmp.s 0x10000200 5
+
+set asm_path   [lindex $argv 0]
+set dump_addr  [lindex $argv 1]
+set num_qwords [lindex $argv 2]
+
+log_user 0
+set timeout 120
+
+proc graceful_shutdown {} {
+    catch {send_eof}
+    expect {
+        eof     { return 0 }
+        timeout { return 1 }
+    }
+}
+proc force_kill {} {
+    catch {send "\003"}        ;# Ctrl-C
+    after 300
+    set pid [exp_pid]
+    catch {exec kill -TERM $pid}
+    after 500
+    catch {exec kill -KILL $pid}
+}
+
+spawn /home/omdave/CompArch/vm-ubuntu-22.04 --start-vm
+expect {
+    "VM_STARTED" {}
+    timeout { puts "ERROR: VM didn't start"; exit 2 }
+}
+
+send "load $asm_path\r"
+expect {
+  -re "VM_PROGRAM_LOADED" {}
+  -re "VM_PARSE_SUCCESS"  { expect -re "VM_PROGRAM_LOADED" }
+  timeout { puts "ERROR: load timeout"; set err 1 }
+}
+
+send "run\r"
+expect {
+  "VM_PROGRAM_END" {}
+  timeout { puts "ERROR: run timeout"; set err 1 }
+}
+
+# Dump just the JSON; no need to print_mem for automation
+send "dump_mem $dump_addr $num_qwords\r"
+expect {
+  "VM_MEMORY_DUMPED" {}
+  timeout { puts "ERROR: dump_mem timeout"; set err 1 }
+}
+
+if {[graceful_shutdown]} {
+    force_kill
+}
+expect eof

@@ -10,7 +10,6 @@
             "name": "Launch Program",
             "program": "${command:riscv-debug-support.riscvSimpleDebug.getProgramName}",
             "stopOnEntry": true,
-            "showDisassembly": "always"
         },
         {
             "name": "Launch Riscv(.s) File Debug",

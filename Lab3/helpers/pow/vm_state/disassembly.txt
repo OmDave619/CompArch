@@ -1,0 +1,26 @@
+0000000000000000 <start>:
+   0: 100002b7             lui x5, 65536
+   4: 20028313             addi x6, x5, 512
+   8: 0002a383             lw x7, x5, 0
+   c: 00428293             addi x5, x5, 4
+  10: 00030e33             add x28, x6, x0
+
+0000000000000014 <LoopPairs>:
+  14: 02038c63             beq x7, x0, 56 <DonePairs>
+  18: 0002a507             flw f10, x5, 0
+  1c: 0042af03             lw x30, x5, 4
+  20: 00828293             addi x5, x5, 8
+  24: 00100f93             addi x31, x0, 1
+  28: d00ff0d3             fcvt.s.w f1, x31 rm=7
+
+000000000000002c <PowLoop>:
+  2c: 000f0863             beq x30, x0, 16 <PowExit>
+  30: 10a0f0d3             fmul.s f1, f1, f10 rm=7
+  34: ffff0f13             addi x30, x30, -1
+  38: fe000ae3             beq x0, x0, -12 <PowLoop>
+
+000000000000003c <PowExit>:
+  3c: 001e3027             fsd x28, f1, 0
+  40: 008e0e13             addi x28, x28, 8
+  44: fff38393             addi x7, x7, -1
+  48: fc0006e3             beq x0, x0, -52 <LoopPairs>
