@@ -1,22 +1,19 @@
-# Float32 Taylor-series exp & sin verifiers for RISC-V lab
-# - Mirrors the user's helper-based algorithm exactly (pow_f32 + fact_int), with float32 rounding
-# - Sums terms in the SAME order as the assembly loop: terms-1 down to 0
-# - Prints IEEE-754 single-precision hex for easy matching with simulator outputs
+# Float32 Taylor-series verifiers using helpers (fact + pow), mirroring your assembly style.
+# - All math rounded to float32 via to_f32()
+# - Sums in the SAME order as your loops: from terms-1 down to 0
+# - Functions: exp, sin, cos, ln, one_over_x (1/x via 1/(1+u) with u=x-1)
 
 import struct
 
 def to_f32(x: float) -> float:
-    """Round Python float to IEEE-754 single precision (float32)."""
     return struct.unpack('>f', struct.pack('>f', float(x)))[0]
 
 def f32_hex(f: float) -> str:
-    """Return hex of IEEE-754 float32 bits (e.g., 0x3f800000)."""
     b = struct.pack('>f', float(f))
     u = struct.unpack('>I', b)[0]
     return f"0x{u:08x}"
 
 def fact_int(n: int) -> int:
-    """Exact integer factorial (non-negative)."""
     if n <= 1:
         return 1
     p = 1
@@ -25,7 +22,6 @@ def fact_int(n: int) -> int:
     return p
 
 def pow_f32(x_f32: float, n: int) -> float:
-    """Compute x^n using float32 multiplies each step."""
     x = to_f32(x_f32)
     if n == 0:
         return to_f32(1.0)
@@ -35,7 +31,6 @@ def pow_f32(x_f32: float, n: int) -> float:
     return acc
 
 def exp_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
-    """exp(x) ≈ sum_{n=0..terms-1} x^n/n!, using helpers, summing n=terms-1..0 (float32)."""
     s = to_f32(0.0)
     for n in range(terms-1, -1, -1):
         fn = fact_int(n)
@@ -46,16 +41,7 @@ def exp_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
     return s
 
 def sin_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
-    """
-    sin(x) ≈ sum_{k=0..terms-1} (-1)^k * x^(2k+1)/(2k+1)!
-    Implemented to mirror assembly structure:
-      for k in terms-1 down to 0:
-        e = 2*k + 1
-        term = pow_f32(x,e) / float32(fact_int(e))
-        if k is odd: term = -term
-        s += term
-    All ops rounded to float32.
-    """
+    # sin(x) ≈ Σ_{k=0..terms-1} (-1)^k x^(2k+1)/(2k+1)!
     s = to_f32(0.0)
     for k in range(terms-1, -1, -1):
         e = 2*k + 1
@@ -63,22 +49,13 @@ def sin_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
         fe_f32 = to_f32(float(fe))
         px = pow_f32(x_f32, e)
         term = to_f32(px / fe_f32)
-        if (k & 1) == 1:  # odd k -> negative term
+        if (k & 1) == 1:                # odd k -> negative
             term = to_f32(-term)
         s = to_f32(s + term)
     return s
 
 def cos_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
-    """
-    cos(x) ≈ sum_{k=0..terms-1} (-1)^k * x^(2k)/(2k)!
-    Mirrors the assembly structure:
-      for k = terms-1 down to 0:
-        e = 2*k
-        term = pow_f32(x,e) / float32(fact_int(e))
-        if k is odd: term = -term
-        s += term
-    All ops rounded to float32.
-    """
+    # cos(x) ≈ Σ_{k=0..terms-1} (-1)^k x^(2k)/(2k)!
     s = to_f32(0.0)
     for k in range(terms-1, -1, -1):
         e = 2*k
@@ -86,24 +63,64 @@ def cos_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
         fe_f32 = to_f32(float(fe))
         px = pow_f32(x_f32, e)
         term = to_f32(px / fe_f32)
-        if (k & 1) == 1:
+        if (k & 1) == 1:                # odd k -> negative
             term = to_f32(-term)
         s = to_f32(s + term)
     return s
 
+def ln_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
+    """
+    ln(x) ≈ Σ_{k=1..terms} (-1)^{k+1} (x-1)^k / k
+    Mirrors the assembly control flow:
+      while (k > 0):
+        term = pow_f32(u, k) / float32(k)
+        if k even: term = -term
+        sum += term
+        k -= 1
+    All ops rounded to float32.
+    """
+    s = to_f32(0.0)
+    u = to_f32(to_f32(x_f32) - to_f32(1.0))
+    k = int(terms)
+    while k > 0:
+        k_f32 = to_f32(float(k))
+        pk = pow_f32(u, k)
+        term = to_f32(pk / k_f32)
+        if (k & 1) == 0:                 # even k -> negate (since (-1)^{k+1})
+            term = to_f32(-term)
+        s = to_f32(s + term)
+        k -= 1
+    return s
 
-# Quick demo: x=2.0f; terms for exp and sin (you can adjust)
-x = to_f32(1.0)
-terms = 5
 
-ex = exp_taylor_f32_using_helpers(x, terms)
-si = sin_taylor_f32_using_helpers(x, terms)
-co = cos_taylor_f32_using_helpers(x, terms)
+def one_over_x_taylor_f32_using_helpers(x_f32: float, terms: int) -> float:
+    """
+    1/x with u = 1 - x:
+      1/x = 1/(1 - u) = Σ_{k=0..terms-1} u^k,  |u| < 1
+    Mirrors the assembly: compute u = 1 - x, sum k = terms-1..0, float32 rounding each step.
+    """
+    s = to_f32(0.0)
+    u = to_f32(to_f32(1.0) - to_f32(x_f32))
+    for k in range(terms-1, -1, -1):
+        pk = pow_f32(u, k)          # u^k in float32
+        s = to_f32(s + pk)
+    return s
 
 
-print("Input x (float32):", x, "hex:", f32_hex(x), "terms:", terms)
-print("exp result:", ex, " hex:", f32_hex(ex))
-print("sin result:", si, " hex:", f32_hex(si))
-print("cos result:", co, "hex:", f32_hex(co))
+# ---- demo ----
+if __name__ == "__main__":
+    x = to_f32(0.7)      
+    terms = 5
 
+    ex  = exp_taylor_f32_using_helpers(x, terms)
+    si  = sin_taylor_f32_using_helpers(x, terms)
+    co  = cos_taylor_f32_using_helpers(x, terms)
+    ln_ = ln_taylor_f32_using_helpers(x, terms)
+    inv = one_over_x_taylor_f32_using_helpers(x, terms)
 
+    print("x:", x, "hex:", f32_hex(x), " terms:", terms)
+    print("exp:", ex,  "hex:", f32_hex(ex))
+    print("sin:", si,  "hex:", f32_hex(si))
+    print("cos:", co,  "hex:", f32_hex(co))
+    print("ln :", ln_, "hex:", f32_hex(ln_))
+    print("1/x:", inv, "hex:", f32_hex(inv))
